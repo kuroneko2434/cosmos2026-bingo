@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>売切れ管理 | コスモス祭2026</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif;background:#f5f5f5;color:#222;padding:16px}
+h1{font-size:18px;margin:0 0 4px}
+.sub{font-size:13px;color:#666;margin:0 0 20px}
+.sponsor{background:#fff;border-radius:12px;padding:14px 16px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.sponsor-name{font-size:14px;font-weight:700;margin-bottom:8px}
+.item-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-top:1px solid #eee}
+.item-text{font-size:13px;color:#444;flex:1}
+.toggle{position:relative;width:44px;height:24px;flex-none}
+.toggle input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:#ccc;border-radius:999px;cursor:pointer;transition:.2s}
+.slider:before{content:"";position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+input:checked+.slider{background:#e03e6b}
+input:checked+.slider:before{transform:translateX(20px)}
+.sold-label{font-size:11px;color:#e03e6b;font-weight:700;margin-left:8px;display:none}
+input:checked~.sold-label{display:inline}
+</style>
+</head>
+<body>
+<h1>売切れ管理</h1>
+<p class="sub">スイッチをオンにすると即時反映されます</p>
+<div id="list">読み込み中...</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
+<script>
+const SUPABASE_URL='https://zgursavbcsxtfouztwsp.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpndXJzYXZiY3N4dGZvdXp0d3NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MjY3NTcsImV4cCI6MjEwODIwMjc1N30.DAhyz-Nj1QTtFceyWkc7kpPFJ_fdtyDtk2eYiKR8xOk';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+const SPONSORS=[{"name":"アヴァンセ株式会社","items":[{"text":"マイルド洗顔パウダー"}]},{"name":"Anker Innovations Japan","items":[{"text":"スピーカー"}]},{"name":"株式会社RQ芦ノ湖リゾート HOTEL Rakuun","items":[{"text":"宿泊優待券"}]},{"name":"株式会社池田製麺","items":[{"text":"生ラーメン"},{"text":"生うどん"}]},{"name":"株式会社いきもん","items":[{"text":"カプセルトイ"}]},{"name":"伊香保グリーン牧場","items":[{"text":"入場ペア招待券"}]},{"name":"有限会社市原ぞうの国","items":[{"text":"市原ぞうの国 入園ペア招待券"}]},{"name":"株式会社ウエニ貿易","items":[{"text":"アクアシャボン ウォータリーシャンプーの香り オードトワレ"}]},{"name":"エクスプロージョン合同会社","items":[{"text":"WPC（プロテイン）ミルクチョコレート味 3kg"}]},{"name":"小川珈琲株式会社","items":[{"text":"京珈琲 ブルーマウンテンブレンド ドリップコーヒー（5杯分）"}]},{"name":"株式会社温泉道場","items":[{"text":"温泉チケット"}]},{"name":"カラオケビッグエコー","items":[{"text":"ビッグエコー カラオケパスポート"}]},{"name":"キスミー（伊勢半）","items":[{"text":"ヒロインメイク マスカラ"}]},{"name":"株式会社紀伊國屋書店","items":[{"text":"図書カード（5,000円分）"},{"text":"図書カード（3,000円分）"},{"text":"図書カード（2,000円分）"}]},{"name":"株式会社KINUJO","items":[{"text":"カールアイロン"}]},{"name":"株式会社グランバー東京ラスク","items":[{"text":"ラスク アソート詰め合わせ"}]},{"name":"株式会社五星コーポレーション","items":[{"text":"ポンティギ（韓国食品）"},{"text":"ジャジャンソース（韓国食品）"}]},{"name":"三養食品株式会社","items":[{"text":"ヤンニョムチキン ブルダック炒め麺"}]},{"name":"笹塚ボウル","items":[{"text":"ボウリング1ゲーム＋貸靴 無料券"}]},{"name":"株式会社サン食品","items":[{"text":"オキナワビアナッツ"}]},{"name":"株式会社阪本高生堂","items":[{"text":"グリース"},{"text":"ポストカード"}]},{"name":"株式会社シール堂印刷","items":[{"text":"自社ブランド製品"}]},{"name":"渋谷区立松濤美術館","items":[{"text":"「路上、お邪魔ですか？」展 招待券"}]},{"name":"スプラッシュ東京（ワンピースインク株式会社）","items":[{"text":"ツアーチケット・BBQチケットなど"}]},{"name":"株式会社the150","items":[{"text":"COLDGIRL（保冷トートバッグ）"},{"text":"Wrapup（iPhoneケース）"}]},{"name":"多摩六都科学館","items":[{"text":"多摩六都科学館 招待券（入館・観覧券）"}]},{"name":"株式会社千鳥饅頭総本舗","items":[{"text":"チロリアン ミックス（8本入り）"}]},{"name":"東京ファインフーズ株式会社","items":[{"text":"Vエイドパン まるまる（4種）"}]},{"name":"株式会社ディグ ディグボウル吉祥寺","items":[{"text":"ボウリング特別ご招待券"}]},{"name":"仲吉商事株式会社","items":[{"text":"おはし丸（ラバーウッド・23cm）"},{"text":"カフェオレマグ（ホワイト）"}]},{"name":"有限会社ねば塾","items":[{"text":"石鹸"},{"text":"蜂蜜"},{"text":"白無垢"}]},{"name":"株式会社ヒューマックスエンタテインメント（池袋HUMAXシネマズ）","items":[{"text":"ヒューマックスシネマ ご招待券"}]},{"name":"フンドーキン醤油株式会社","items":[{"text":"鶏炭火焼のたれ"}]},{"name":"株式会社フラワーリング","items":[{"text":"POINT MIRROR"}]},{"name":"Bungy Japan株式会社","items":[{"text":"バンジージャンプ無料クーポン"}]},{"name":"株式会社ビューティーネイラー","items":[{"text":"ブリングネイル（ネイルシール）"}]},{"name":"マルサンアイ株式会社","items":[{"text":"豆乳飲料"},{"text":"味噌"}]},{"name":"株式会社マンナンライフ","items":[{"text":"蒟蒻畑"}]},{"name":"株式会社モンロワール","items":[{"text":"リーフメモリー"}]},{"name":"山本漢方製薬株式会社","items":[{"text":"大麦若葉 粉末サンプル"}]},{"name":"ルートインジャパン株式会社（ルートインホテルズ）","items":[{"text":"ルートインホテルズ ご宿泊割引券"}]}];
+
+let soldOutSet=new Set();
+
+async function load(){
+  const{data}=await sb.from('sold_out').select('sponsor_index,item_index');
+  if(data) soldOutSet=new Set(data.map(r=>r.sponsor_index+'-'+r.item_index));
+  render();
+}
+
+function render(){
+  document.getElementById('list').innerHTML=SPONSORS.map((s,i)=>`
+    <div class="sponsor">
+      <div class="sponsor-name">${s.name}</div>
+      ${s.items.map((it,j)=>`
+        <div class="item-row">
+          <span class="item-text">${it.text}</span>
+          <label class="toggle">
+            <input type="checkbox" ${soldOutSet.has(i+'-'+j)?'checked':''} onchange="toggle(${i},${j},this.checked)">
+            <span class="slider"></span>
+          </label>
+          <span class="sold-label">売切れ</span>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+async function toggle(si,ii,checked){
+  if(checked){
+    await sb.from('sold_out').insert({sponsor_index:si,item_index:ii});
+    soldOutSet.add(si+'-'+ii);
+  } else {
+    await sb.from('sold_out').delete().eq('sponsor_index',si).eq('item_index',ii);
+    soldOutSet.delete(si+'-'+ii);
+  }
+}
+
+load();
+</script>
+</body>
+</html>

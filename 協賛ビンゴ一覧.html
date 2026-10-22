@@ -55,7 +55,26 @@ main{max-width:960px;margin:0 auto;padding:0 16px 48px;
 .more{padding:0 12px 10px;font-size:12px;color:var(--accent)}
 .empty{grid-column:1/-1;text-align:center;color:var(--sub);padding:32px 0}
 footer{text-align:center;color:var(--sub);font-size:12px;padding:0 16px 32px}
+@keyframes heartpop{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}70%{opacity:1;transform:translate(-50%,-50%) scale(1.4)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.2)}}
+.card-footer{display:flex;align-items:center;justify-content:space-between;padding:0 12px 10px}
+.more{font-size:12px;color:var(--accent)}
+.like-remove{background:none;border:none;cursor:pointer;padding:0;font-size:16px;color:#e03e6b;line-height:1;font-family:inherit}
+.card-sold-all{font-size:11px;font-weight:700;color:#fff;background:#e03e6b;border-radius:4px;padding:2px 6px;white-space:nowrap}
+.card-sold-part{font-size:11px;font-weight:700;color:#e03e6b;border:1px solid #e03e6b;border-radius:4px;padding:2px 6px;white-space:nowrap}
+.filter-like{background:none;border:1.5px solid var(--line);border-radius:999px;padding:4px 12px;
+  font:inherit;font-size:13px;color:var(--sub);cursor:pointer;white-space:nowrap}
+.filter-like.active{border-color:#e03e6b;color:#e03e6b;background:rgba(224,62,107,.08)}
 #waiting-screen{display:none}
+#help-screen{display:none;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:40px 16px;text-align:center}
+.help-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px 20px;max-width:360px;width:100%;text-align:left;margin-bottom:24px}
+.help-card h2{margin:0 0 16px;font-size:17px;text-align:center;color:var(--ink)}
+.help-step{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+.help-step:last-child{margin-bottom:0}
+.help-text{font-size:14px;color:var(--ink);line-height:1.5}
+.help-text b{color:var(--accent)}
+.btn-start{background:var(--accent);color:#fff;border:none;border-radius:999px;padding:14px 40px;font:inherit;font-size:16px;font-weight:700;cursor:pointer;margin-top:4px}
+.btn-help{background:none;border:1.5px solid var(--line);border-radius:999px;padding:4px 12px;font:inherit;font-size:13px;color:var(--sub);cursor:pointer;white-space:nowrap}
+.btn-help:hover{border-color:var(--accent);color:var(--accent)}
 
 /* 協賛品ポップアップ */
 dialog{border:none;padding:0;border-radius:18px;background:var(--card);color:var(--ink);
@@ -89,6 +108,26 @@ dialog::backdrop{background:var(--shade)}
   <p style="color:var(--sub);margin:0;font-size:15px" id="waiting-msg"></p>
 </div>
 
+<div id="help-screen">
+  <div class="fest">コスモス祭 2026</div>
+  <div class="help-card">
+    <h2>♥ メモ機能の使い方</h2>
+    <div class="help-step">
+      <div class="help-text">企業名をタップすると<b>協賛品の詳細</b>が見られます</div>
+    </div>
+    <div class="help-step">
+      <div class="help-text">詳細画面を<b>2回連続タップ</b>すると ♥ メモに追加できます</div>
+    </div>
+    <div class="help-step">
+      <div class="help-text">カードの ♥ をタップすると<b>メモを外せます</b></div>
+    </div>
+    <div class="help-step">
+      <div class="help-text">上の <b>♡ メモした企業</b> ボタンでメモ済みの企業だけ絞り込めます</div>
+    </div>
+  </div>
+  <button class="btn-start" id="help-ok">景品一覧を見る →</button>
+</div>
+
 <div id="main-screen">
 <header>
   <div class="fest">コスモス祭 2026</div>
@@ -98,6 +137,8 @@ dialog::backdrop{background:var(--shade)}
 </header>
 <div class="tools">
   <input id="q" type="search" placeholder="企業名・協賛品で検索" aria-label="企業名・協賛品で検索">
+  <button class="filter-like" id="filter-like" aria-pressed="false">♡ メモした企業</button>
+  <button class="btn-help" id="show-help" aria-label="使い方を見る">？ 使い方</button>
   <span class="count" id="count"></span>
 </div>
 <main id="list"></main>
@@ -113,6 +154,19 @@ dialog::backdrop{background:var(--shade)}
   <ul class="items" id="dlg-items"></ul>
 </dialog>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
+<script>
+const SUPABASE_URL='https://zgursavbcsxtfouztwsp.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpndXJzYXZiY3N4dGZvdXp0d3NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MjY3NTcsImV4cCI6MjEwODIwMjc1N30.DAhyz-Nj1QTtFceyWkc7kpPFJ_fdtyDtk2eYiKR8xOk';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let soldOutSet=new Set();
+async function loadSoldOut(){
+  const{data}=await sb.from('sold_out').select('sponsor_index,item_index');
+  if(data) soldOutSet=new Set(data.map(r=>r.sponsor_index+'-'+r.item_index));
+  render(document.getElementById('q').value);
+}
+sb.channel('sold_out_changes').on('postgres_changes',{event:'*',schema:'public',table:'sold_out'},()=>{loadSoldOut();}).subscribe();
+</script>
 <script>
 const SPONSORS = [
   { name: "アヴァンセ株式会社", img: "", items: [ { text: "マイルド洗顔パウダー", img: "" } ] },
@@ -161,35 +215,72 @@ const SPONSORS = [
 const icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 17l-5-5-9 8"/></svg>';
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const slot=(img,alt)=>img?`<div class="slot"><img src="${esc(img)}" alt="${esc(alt)}" loading="lazy"></div>`:'';
-const slotItem=(img,alt)=>`<div class="slot">${img?`<img src="${esc(img)}" alt="${esc(alt)}" loading="lazy">`:`<div class="ph">${icon}<span>画像準備中</span></div>`}</div>`;
+const slotItem=(img,alt,soldOut=false)=>`<div class="slot" style="position:relative">${img?`<img src="${esc(img)}" alt="${esc(alt)}" loading="lazy"${soldOut?' style="opacity:.4"':''}>`:`<div class="ph">${icon}<span>画像準備中</span></div>`}${soldOut?`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35)"><span style="color:#fff;font-weight:700;font-size:15px;letter-spacing:.1em;border:2px solid #fff;padding:4px 12px;border-radius:4px">SOLD OUT</span></div>`:''}` + `</div>`;
+
+let likes=new Set();
+try{ likes=new Set(JSON.parse(localStorage.getItem('cosmos_likes')||'[]')); }catch(e){}
+function saveLikes(){ try{ localStorage.setItem('cosmos_likes',JSON.stringify([...likes])); }catch(e){} }
+
+let filterLike=false;
 
 function render(q=''){
   const k=q.trim().toLowerCase();
-  const list=SPONSORS.map((s,i)=>({...s,i})).filter(s=>!k||
+  let list=SPONSORS.map((s,i)=>({...s,i})).filter(s=>!k||
     s.name.toLowerCase().includes(k)||s.items.some(it=>it.text.toLowerCase().includes(k)));
+  if(filterLike) list=list.filter(s=>likes.has(s.i));
   document.getElementById('count').textContent=list.length+' 社';
   document.getElementById('list').innerHTML=list.length?list.map(s=>`
     <button class="card" type="button" data-i="${s.i}">
       ${slot(s.img,s.name)}
       <div class="name">${esc(s.name)}</div>
-      <div class="more">協賛品を見る ›</div>
+      <div class="card-footer">
+        <span class="more">協賛品を見る ›</span>
+        <span style="display:flex;align-items:center;gap:6px">
+          ${(()=>{const total=s.items.length;const sold=s.items.filter((_,j)=>soldOutSet.has(s.i+'-'+j)).length;if(sold===0)return'';if(sold===total)return'<span class="card-sold-all">売切れ</span>';return'<span class="card-sold-part">一部売切れ</span>';})()}
+          ${likes.has(s.i)?`<span class="like-remove" role="button" tabindex="0" data-like="${s.i}" aria-label="いいねを外す">♥</span>`:''}
+        </span>
+      </div>
     </button>`).join(''):'<p class="empty">該当する企業が見つかりません</p>';
 }
 
 const dlg=document.getElementById('dlg');
+let currentSponsor=-1, dlgLastTap=0;
 function openSponsor(i){
+  currentSponsor=i;
   const s=SPONSORS[i];
   document.getElementById('dlg-title').textContent=s.name;
-  document.getElementById('dlg-items').innerHTML=s.items.map(it=>`
-    <li class="item">${slotItem(it.img,it.text)}<p>${esc(it.text)}</p></li>`).join('');
+  document.getElementById('dlg-items').innerHTML=s.items.map((it,j)=>{
+    const so=soldOutSet.has(i+'-'+j)||it.soldOut||false;
+    return`<li class="item">${slotItem(it.img,it.text,so)}<p>${esc(it.text)}${so?` <span style="color:#e03e6b;font-size:12px;font-weight:700">（売切れ）</span>`:''}</p></li>`;
+  }).join('');
   dlg.showModal();
   dlg.scrollTop=0;
 }
+dlg.addEventListener('click',e=>{
+  if(e.target===dlg){ dlg.close(); return; }
+  if(e.target.closest('#close')){ dlg.close(); return; }
+  const now=Date.now();
+  if(now-dlgLastTap<400 && currentSponsor>=0){
+    likes.has(currentSponsor)?likes.delete(currentSponsor):likes.add(currentSponsor);
+    saveLikes(); render(document.getElementById('q').value);
+    const heart=document.createElement('div');
+    heart.textContent='♥'; heart.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(1);font-size:60px;color:#e03e6b;pointer-events:none;animation:heartpop .6s forwards';
+    dlg.appendChild(heart); setTimeout(()=>heart.remove(),600);
+    dlgLastTap=0;
+  } else { dlgLastTap=now; }
+});
 document.getElementById('list').addEventListener('click',e=>{
+  const rb=e.target.closest('.like-remove');
+  if(rb){ e.stopPropagation(); likes.delete(+rb.dataset.like); saveLikes(); render(document.getElementById('q').value); return; }
   const c=e.target.closest('.card'); if(c) openSponsor(+c.dataset.i);
 });
+document.getElementById('filter-like').addEventListener('click',function(){
+  filterLike=!filterLike; this.classList.toggle('active',filterLike);
+  this.textContent=filterLike?'♥ メモした企業':'♡ メモした企業';
+  this.setAttribute('aria-pressed',filterLike);
+  render(document.getElementById('q').value);
+});
 document.getElementById('close').addEventListener('click',()=>dlg.close());
-dlg.addEventListener('click',e=>{ if(e.target===dlg) dlg.close(); });
 document.getElementById('q').addEventListener('input',e=>render(e.target.value));
 // 公開時間: 2026-11-08 14:30〜16:00
 const OPEN_START    = new Date('2026-11-08T14:30:00');
@@ -199,16 +290,34 @@ const OVERRIDE_UNTIL = new Date('2026-11-06T23:59:59'); // ダブルタップ有
 let manualOverride = false;
 let lastTap = 0;
 
+let helpSeen = false;
+function showHelp(){
+  document.getElementById('waiting-screen').style.display='none';
+  document.getElementById('main-screen').style.display='none';
+  document.getElementById('help-screen').style.display='flex';
+}
+function showMain(){
+  helpSeen=true;
+  document.getElementById('help-screen').style.display='none';
+  document.getElementById('waiting-screen').style.display='none';
+  document.getElementById('main-screen').style.display='';
+  render(document.getElementById('q').value);
+}
 function checkTime() {
   const now = new Date();
   const waiting = document.getElementById('waiting-screen');
   const main    = document.getElementById('main-screen');
+  const help    = document.getElementById('help-screen');
   const isOpen  = manualOverride || (now >= OPEN_START && now < OPEN_END);
   if (isOpen) {
+    if(!helpSeen){ showHelp(); return; }
+    if(help.style.display==='flex') return;
     waiting.style.display = 'none';
+    help.style.display = 'none';
     main.style.display = '';
   } else {
     main.style.display = 'none';
+    help.style.display = 'none';
     waiting.style.display = 'flex';
     const msg = document.getElementById('waiting-msg');
     if (now < OPEN_START) {
@@ -218,22 +327,27 @@ function checkTime() {
     }
   }
 }
+document.getElementById('help-ok').addEventListener('click', showMain);
+document.getElementById('show-help').addEventListener('click', showHelp);
 
-// ダブルタップで手動切替（11/6まで有効）
+// 3回タップで手動切替（11/6まで有効）
+let tapCount = 0, tapResetTimer = null;
 document.addEventListener('click', () => {
   const now = new Date();
   if (now > OVERRIDE_UNTIL) return;
-  const t = Date.now();
-  if (t - lastTap < 400) {
+  tapCount++;
+  clearTimeout(tapResetTimer);
+  tapResetTimer = setTimeout(() => { tapCount = 0; }, 600);
+  if (tapCount >= 3) {
+    tapCount = 0;
     manualOverride = !manualOverride;
     checkTime();
   }
-  lastTap = t;
 });
 
 checkTime();
 setInterval(checkTime, 10000);
-render();
+loadSoldOut();
 </script>
 </body>
 </html>
