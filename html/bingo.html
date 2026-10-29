@@ -234,6 +234,11 @@ function render(q=''){
   let list=SPONSORS.map((s,i)=>({...s,i})).filter(s=>!k||
     s.name.toLowerCase().includes(k)||s.items.some(it=>it.text.toLowerCase().includes(k)));
   if(filterLike) list=list.filter(s=>likes.has(s.i));
+  list.sort((a,b)=>{
+    const soldA=a.items.filter((_,j)=>soldOutSet.has(a.i+'-'+j)).length===a.items.length&&a.items.length>0;
+    const soldB=b.items.filter((_,j)=>soldOutSet.has(b.i+'-'+j)).length===b.items.length&&b.items.length>0;
+    return soldA===soldB?0:soldA?1:-1;
+  });
   document.getElementById('count').textContent=list.length+' 社';
   document.getElementById('list').innerHTML=list.length?list.map(s=>`
     <button class="card" type="button" data-i="${s.i}">
