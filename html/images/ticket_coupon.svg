@@ -19,6 +19,12 @@
   <!-- Dashed divider -->
   <line x1="90" y1="48" x2="90" y2="192" stroke="#4a7c59" stroke-width="1.5" stroke-dasharray="6,4"/>
 
+  <!-- Left stub text -->
+  <text x="55" y="100" text-anchor="middle" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif" font-size="13" fill="#2e6040" letter-spacing="2">ク</text>
+  <text x="55" y="118" text-anchor="middle" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif" font-size="13" fill="#2e6040" letter-spacing="2">ー</text>
+  <text x="55" y="136" text-anchor="middle" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif" font-size="13" fill="#2e6040" letter-spacing="2">ポ</text>
+  <text x="55" y="154" text-anchor="middle" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif" font-size="13" fill="#2e6040" letter-spacing="2">ン</text>
+
 
   <!-- Main text -->
   <text x="245" y="108" text-anchor="middle" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif" font-size="30" font-weight="bold" fill="#1e4d2e" letter-spacing="4">クーポン</text>
