@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" width="400" height="240">
+  <!-- Background -->
+  <rect width="400" height="240" fill="#f4f0f8"/>
+
+  <!-- Card shape -->
+  <rect x="20" y="30" width="360" height="180" rx="16" fill="#5a3e8a"/>
+
+  <!-- Inner card decoration -->
+  <rect x="20" y="30" width="360" height="180" rx="16" fill="none" stroke="#8060b0" stroke-width="1.5" opacity="0.5"/>
+  <rect x="34" y="44" width="332" height="152" rx="10" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.2"/>
+
+  <!-- Chip decoration -->
+  <rect x="44" y="90" width="48" height="36" rx="6" fill="#c8a930" opacity="0.9"/>
+  <line x1="44" y1="108" x2="92" y2="108" stroke="#8b7020" stroke-width="1.5"/>
+  <line x1="68" y1="90" x2="68" y2="126" stroke="#8b7020" stroke-width="1.5"/>
+
+  <!-- Main text -->
+  <text x="245" y="100" text-anchor="middle" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif" font-size="26" font-weight="bold" fill="#ffffff" letter-spacing="3">図書カード</text>
+  <text x="245" y="126" text-anchor="middle" font-family="Georgia,serif" font-size="13" fill="#c8a8f8" letter-spacing="5">GIFT CARD</text>
+
+  <!-- Bottom strip -->
+  <rect x="20" y="170" width="360" height="40" rx="0" fill="#3d2860"/>
+  <rect x="20" y="170" width="360" height="40" rx="0" fill="none"/>
+  <rect x="20" y="186" width="360" height="24" rx="0" fill="#2a1d40"/>
+  <!-- Magnetic strip effect -->
+  <rect x="20" y="186" width="360" height="24" rx="0" fill="#1a1030"/>
+
+  <!-- Bottom label -->
+  <text x="245" y="207" text-anchor="middle" font-family="Georgia,serif" font-size="10" fill="#8060b0" letter-spacing="3">コスモス祭 2026</text>
+</svg>
