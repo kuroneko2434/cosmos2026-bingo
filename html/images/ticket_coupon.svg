@@ -21,7 +21,7 @@
 
   <!-- Left stub text -->
   <text x="55" y="100" text-anchor="middle" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif" font-size="13" fill="#2e6040" letter-spacing="2">ク</text>
-  <text x="55" y="118" text-anchor="middle" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif" font-size="13" fill="#2e6040" letter-spacing="2">ー</text>
+  <text x="55" y="118" text-anchor="middle" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif" font-size="13" fill="#2e6040" letter-spacing="2">｜</text>
   <text x="55" y="136" text-anchor="middle" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif" font-size="13" fill="#2e6040" letter-spacing="2">ポ</text>
   <text x="55" y="154" text-anchor="middle" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif" font-size="13" fill="#2e6040" letter-spacing="2">ン</text>
 
