@@ -26,5 +26,6 @@
   <rect x="20" y="186" width="360" height="24" rx="0" fill="#1a1030"/>
 
   <!-- Bottom label -->
-  <text x="245" y="207" text-anchor="middle" font-family="Georgia,serif" font-size="10" fill="#8060b0" letter-spacing="3">コスモス祭 2026</text>
+  <text x="245" y="203" text-anchor="middle" font-family="Georgia,serif" font-size="10" fill="#8060b0" letter-spacing="3">コスモス祭 2026</text>
+  <text x="245" y="218" text-anchor="middle" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif" font-size="9" fill="#6040a0">※実物とは異なります</text>
 </svg>
