@@ -285,6 +285,9 @@ document.getElementById('q').addEventListener('input',e=>render(e.target.value))
 // 公開時間: 2026-11-08 14:30〜16:00
 const OPEN_START    = new Date('2026-11-08T14:30:00');
 const OPEN_END      = new Date('2026-11-08T16:00:00');
+// プレビュー時間: 2026-11-05 18:00〜18:10
+const PREVIEW_START = new Date('2026-11-05T18:00:00');
+const PREVIEW_END   = new Date('2026-11-05T18:10:00');
 const OVERRIDE_UNTIL = new Date('2026-11-06T23:59:59'); // ダブルタップ有効期限
 
 let manualOverride = false;
@@ -308,7 +311,7 @@ function checkTime() {
   const waiting = document.getElementById('waiting-screen');
   const main    = document.getElementById('main-screen');
   const help    = document.getElementById('help-screen');
-  const isOpen  = manualOverride || (now >= OPEN_START && now < OPEN_END);
+  const isOpen  = manualOverride || (now >= OPEN_START && now < OPEN_END) || (now >= PREVIEW_START && now < PREVIEW_END);
   if (isOpen) {
     if(!helpSeen){ showHelp(); return; }
     if(help.style.display==='flex') return;
