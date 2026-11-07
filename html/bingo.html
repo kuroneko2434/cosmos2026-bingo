@@ -331,7 +331,7 @@ document.addEventListener('click', () => {
   tapResetTimer = setTimeout(() => { tapCount = 0; }, 600);
   if (tapCount >= 3) {
     tapCount = 0;
-    manualOverride = !manualOverride;
+    manualOverride = true;
     checkTime();
   }
 });
